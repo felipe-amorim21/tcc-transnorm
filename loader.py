@@ -23,7 +23,7 @@ class weak_annotation(torch.nn.Module):
     def forward(self, x):
         x = self.arranger(x)
         x = torch.sum(x, dim = [-2, -1])
-        x = x/x.max()
+        x = x / (x.max() + 1e-8)
         return x
     
 def Bextraction(img):
