@@ -10,7 +10,7 @@ def dataset_normalized(imgs):
     imgs_normalized = np.empty(imgs.shape)
     imgs_std = np.std(imgs)
     imgs_mean = np.mean(imgs)
-    imgs_normalized = (imgs-imgs_mean)/imgs_std
+    imgs_normalized = (imgs-imgs_mean)/(imgs_std + 1e-8)
     for i in range(imgs.shape[0]):
         imgs_normalized[i] = ((imgs_normalized[i] - np.min(imgs_normalized[i])) / (np.max(imgs_normalized[i])-np.min(imgs_normalized[i])))*255
     return imgs_normalized
@@ -23,7 +23,7 @@ class weak_annotation(torch.nn.Module):
     def forward(self, x):
         x = self.arranger(x)
         x = torch.sum(x, dim = [-2, -1])
-        x = x / (x.max() + 1e-8)
+        x = x/x.max()
         return x
     
 def Bextraction(img):
