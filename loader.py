@@ -12,7 +12,7 @@ def dataset_normalized(imgs):
     imgs_mean = np.mean(imgs)
     imgs_normalized = (imgs-imgs_mean)/(imgs_std + 1e-8)
     for i in range(imgs.shape[0]):
-        imgs_normalized[i] = ((imgs_normalized[i] - np.min(imgs_normalized[i])) / (np.max(imgs_normalized[i])-np.min(imgs_normalized[i])))*255
+        imgs_normalized[i] = ((imgs_normalized[i] - np.min(imgs_normalized[i])) / (np.max(imgs_normalized[i])-np.min(imgs_normalized[i])+ 1e-8))*255
     return imgs_normalized
        
     
