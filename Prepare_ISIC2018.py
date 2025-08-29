@@ -15,7 +15,7 @@ width  = 256
 channels = 3
 
 ############################################################# Prepare ISIC 2018 data set #################################################
-Dataset_add = '/ISIC2018/'
+Dataset_add = 'dataset_isic18/'
 Tr_add = 'ISIC2018_Task1-2_Training_Input'
 
 Tr_list = glob.glob(Dataset_add+ Tr_add+'/*.jpg')
@@ -51,13 +51,19 @@ Train_mask      = Label_train_2018[0:1815,:,:]
 Validation_mask = Label_train_2018[1815:1815+259,:,:]
 Test_mask       = Label_train_2018[1815+259:2594,:,:]
 
+#alteração do caminho para salvar os arquivos npy
+output_path = 'dataset_isic18/'
+print(f"Saving .npy files to: {output_path}")
 
-np.save('data_train', Train_img)
-np.save('data_test' , Test_img)
-np.save('data_val'  , Validation_img)
 
-np.save('mask_train', Train_mask)
-np.save('mask_test' , Test_mask)
-np.save('mask_val'  , Validation_mask)
+np.save(output_path + 'data_train.npy', Train_img)
+np.save(output_path + 'data_test.npy' , Test_img)
+np.save(output_path + 'data_val.npy'  , Validation_img)
+
+np.save(output_path + 'mask_train.npy', Train_mask)
+np.save(output_path + 'mask_test.npy' , Test_mask)
+np.save(output_path + 'mask_val.npy'  , Validation_mask)
+
+print("Pre-processing complete!")
 
 
