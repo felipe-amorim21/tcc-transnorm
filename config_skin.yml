@@ -1,11 +1,11 @@
 ## Config file
-lr:              1e-4 # Initial learning rate
-epochs:          50 # Number of epochs to train the model 
+lr:              1e-3 # Initial learning rate
+epochs:          100 # Number of epochs to train the model 
 number_classes:  1 # Number of classes in the target dataset
-batch_size_tr:   2 # Batch size for train
-batch_size_va:   1 # Batch size for validationn 
+batch_size_tr:   16 # Batch size for train
+batch_size_va:   16 # Batch size for validationn 
 saved_model:     './weights/weights_isic18.model' # leave '' will use a default value 
-path_to_data:    '../yuli_version/processed_data/isic18/' #path to dataset
+path_to_data:    'dataset_isic18/' #path to dataset
 patience:        10 # number of epochs without improvement to do before finishing training early.
 save_result:     './results/' # path to save results
 progress_p:      0.1 # value between 0-1 shows the number of time we need to report training progress in each epoch
