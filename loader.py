@@ -10,9 +10,9 @@ def dataset_normalized(imgs):
     imgs_normalized = np.empty(imgs.shape)
     imgs_std = np.std(imgs)
     imgs_mean = np.mean(imgs)
-    imgs_normalized = (imgs-imgs_mean)/(imgs_std + 1e-8)
+    imgs_normalized = (imgs-imgs_mean)/imgs_std
     for i in range(imgs.shape[0]):
-        imgs_normalized[i] = ((imgs_normalized[i] - np.min(imgs_normalized[i])) / (np.max(imgs_normalized[i])-np.min(imgs_normalized[i])+ 1e-8))*255
+        imgs_normalized[i] = ((imgs_normalized[i] - np.min(imgs_normalized[i])) / (np.max(imgs_normalized[i])-np.min(imgs_normalized[i])))*255
     return imgs_normalized
        
     
@@ -54,7 +54,7 @@ class isic_loader(Dataset):
           
         self.data   = dataset_normalized(self.data)
         self.mask   = np.expand_dims(self.mask, axis=3)
-        #self.mask   = self.mask /255.
+        self.mask   = self.mask /255.
         self.weak_annotation = weak_annotation(patch_size = 16, img_size = 256)
          
     def __getitem__(self, indx):
