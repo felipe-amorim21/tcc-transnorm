@@ -14,11 +14,26 @@ width  = 256
 
 ############################################################# Preparar dados do ISIC 2018 #################################################
 # Garanta que este é o caminho correto para a pasta do seu dataset
-Dataset_add = 'dataset_isic18/'
+# Defina a pasta principal do dataset aqui (sem a barra no final)
+Dataset_add = 'dataset_isic18' 
+
+# Defina a subpasta das imagens de treino aqui
 Tr_add = 'ISIC2018_Task1-2_Training_Input'
 
-# Lista todos os arquivos de imagem de treinamento
-Tr_list = sorted(glob.glob(os.path.join(Dataset_add, Tr_add, '*.jpg')))
+# Agora, junte os caminhos de forma segura com os.path.join
+# Isso cria o caminho 'dataset_isic18/ISIC2018_Task1-2_Training_Input/*.jpg'
+caminho_para_procurar = os.path.join(Dataset_add, Tr_add, '*.jpg')
+
+# A verificação que adicionamos antes
+print(f"Procurando por imagens em: {caminho_para_procurar}")
+Tr_list = sorted(glob.glob(caminho_para_procurar))
+print(f"Número de imagens .jpg encontradas: {len(Tr_list)}")
+
+if len(Tr_list) == 0:
+    print("\nERRO CRÍTICO: Nenhuma imagem foi encontrada! Verifique os nomes das pastas.")
+    import sys
+    sys.exit("Script interrompido.")
+
 num_samples = len(Tr_list)
 
 # Inicializa os arrays que vão guardar os dados
