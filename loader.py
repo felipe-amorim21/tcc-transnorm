@@ -54,7 +54,7 @@ class isic_loader(Dataset):
           
         self.data   = dataset_normalized(self.data)
         self.mask   = np.expand_dims(self.mask, axis=3)
-        self.mask   = self.mask /255.
+        #self.mask   = self.mask /255.
         self.weak_annotation = weak_annotation(patch_size = 16, img_size = 256)
          
     def __getitem__(self, indx):
