@@ -9,6 +9,7 @@ import scipy.io as sio
 # import scipy.misc as sc
 from PIL import Image
 import glob
+import os
 
 # Parameters
 height = 256
