@@ -56,10 +56,10 @@ Validation_mask = Label_train_2018[1815:1815+259,:,:]
 Test_mask       = Label_train_2018[1815+259:2594,:,:]
 
 
-np.save('data_train', Train_img)
-np.save('data_test' , Test_img)
-np.save('data_val'  , Validation_img)
+np.save(os.path.join(Dataset_add, 'data_train.npy'), Train_img)
+np.save(os.path.join(Dataset_add, 'data_test.npy') , Test_img)
+np.save(os.path.join(Dataset_add, 'data_val.npy')  , Validation_img)
 
-np.save('mask_train', Train_mask)
-np.save('mask_test' , Test_mask)
-np.save('mask_val'  , Validation_mask)
+np.save(os.path.join(Dataset_add, 'mask_train.npy'), Train_mask)
+np.save(os.path.join(Dataset_add, 'mask_test.npy') , Test_mask)
+np.save(os.path.join(Dataset_add, 'mask_val.npy')  , Validation_mask)
