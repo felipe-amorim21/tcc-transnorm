@@ -68,7 +68,7 @@ class isic_loader(Dataset):
                 A.VerticalFlip(p=0.5),
                 A.Rotate(limit=45, p=0.7),
                 A.RandomBrightnessContrast(p=0.5),
-                A.ElasticTransform(p=0.5, alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03),
+                A.ElasticTransform(p=0.5, alpha=120, sigma=120 * 0.05),
                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)), # Médias e desvios padrão da ImageNet, um bom ponto de partida
                 ToTensorV2(), # Converte para Tensor e ajusta as dimensões
             ])
