@@ -604,6 +604,7 @@ class VisionTransformer(nn.Module):
             in_channels=config['decoder_channels'][-1],
             out_channels=config['n_classes'],
             kernel_size=3,
+            upsampling=2
         )
         self.config = config
 
