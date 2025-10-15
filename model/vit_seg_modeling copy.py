@@ -276,66 +276,46 @@ class Mlp(nn.Module):
         return x
 
 
-import timm # Adicione esta importação
-
 class Embeddings(nn.Module):
     """Construct the embeddings from patch, position embeddings.
     """
     def __init__(self, config, img_size, in_channels=3):
         super(Embeddings, self).__init__()
-        self.hybrid = True # Estamos usando um backbone CNN, então é híbrido
+        self.hybrid = None
         self.config = config
         img_size = _pair(img_size)
-        
-        # --- MODIFICAÇÃO PRINCIPAL: Substituindo ResNetV2 por ConvNeXt ---
-        # Carregamos um ConvNeXt pré-treinado da biblioteca timm
-        # features_only=True: retorna os mapas de features de cada estágio
-        # out_indices=(0, 1, 2, 3): garante que teremos 4 saídas de estágios
-        self.hybrid_model = timm.create_model(
-            'convnext_base',
-            pretrained=True,
-            features_only=True,
-            out_indices=(0, 1, 2, 3)
-        )
-        
-        # Os canais de saída do ConvNeXt-Base são [128, 256, 512, 1024]
-        # O Decoder do TransUNet espera skips com canais [512, 256, 64]
-        # Precisamos criar "adaptadores" (Convoluções 1x1) para compatibilizar
-        self.adapter_skip2 = nn.Conv2d(128, 64, kernel_size=1) # Estágio 0 -> Skip 2
-        # Para os outros, os canais já batem ou são usados de outra forma
-        
-        # A última saída do encoder (1024 canais) vai para o Transformer
-        in_channels = 1024 
-        patch_size = _pair(config.patches["size"])
-        n_patches = (img_size[0] // 16) * (img_size[1] // 16)
 
+        if config.patches.get("grid") is not None:   # ResNet
+            grid_size = config.patches["grid"]
+            patch_size = (img_size[0] // 16 // grid_size[0], img_size[1] // 16 // grid_size[1])
+            patch_size_real = (patch_size[0] * 16, patch_size[1] * 16)
+            n_patches = (img_size[0] // patch_size_real[0]) * (img_size[1] // patch_size_real[1])  
+            self.hybrid = True
+        else:
+            patch_size = _pair(config.patches["size"])
+            n_patches = (img_size[0] // patch_size[0]) * (img_size[1] // patch_size[1])
+            self.hybrid = False
+
+        if self.hybrid:
+            self.hybrid_model = ResNetV2(block_units=config.resnet.num_layers, width_factor=config.resnet.width_factor)
+            in_channels = self.hybrid_model.width * 16
         self.patch_embeddings = Conv2d(in_channels=in_channels,
                                        out_channels=config.hidden_size,
                                        kernel_size=patch_size,
                                        stride=patch_size)
         self.position_embeddings = nn.Parameter(torch.zeros(1, n_patches, config.hidden_size))
+
         self.dropout = Dropout(config.transformer["dropout_rate"])
 
 
     def forward(self, x):
-        # O ConvNeXt retorna uma lista de 4 mapas de features
-        features_raw = self.hybrid_model(x)
-        
-        # A saída do último estágio é a entrada para o Transformer
-        x = features_raw[-1]
-        
-        # Preparamos as skip connections para o Decoder, na ordem que ele espera
-        # O Decoder do TransUNet pega as features da mais profunda para a mais rasa
-        f_skip0 = features_raw[2] # 512 canais, compatível
-        f_skip1 = features_raw[1] # 256 canais, compatível
-        f_skip2 = self.adapter_skip2(features_raw[0]) # 128 -> 64 canais
-        
-        features = [f_skip0, f_skip1, f_skip2] # Lista de skips para o decoder
-        
-        # Continua como antes...
-        x = self.patch_embeddings(x)
+        if self.hybrid:
+            x, features = self.hybrid_model(x)
+        else:
+            features = None
+        x = self.patch_embeddings(x)  # (B, hidden. n_patches^(1/2), n_patches^(1/2))
         x = x.flatten(2)
-        x = x.transpose(-1, -2)
+        x = x.transpose(-1, -2)  # (B, n_patches, hidden)
 
         embeddings = x + self.position_embeddings
         embeddings = self.dropout(embeddings)
